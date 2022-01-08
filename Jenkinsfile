@@ -5,7 +5,7 @@ pipeline{
      maven  'Maven-3.8.4'
    }
 
-   environments{
+   environment{
      IMAGE_NAME = 'moussbed/java-mvn:1.1'
    }
 
