@@ -42,6 +42,7 @@ pipeline{
        stage('push image to docker hub repository'){
              steps{
                 script{
+                   dockerLogin()
                    pushImage "$IMAGE_NAME"  // Come from jenkins-shared-library
                 }
              }
