@@ -10,7 +10,7 @@ pipeline{
    }
 
    environment{
-     IMAGE_NAME = 'moussbed/java-mvn:1.1'
+     IMAGE_NAME = 'moussbed/java-mvn:1.2'
    }
 
    stages{
@@ -34,7 +34,7 @@ pipeline{
        stage('build image'){
              steps{
                 script{
-                  buildImage() // Come from jenkins-shared-library
+                  buildImage "$IMAGE_NAME" // Come from jenkins-shared-library
                 }
              }
        }
@@ -42,7 +42,7 @@ pipeline{
        stage('push image to docker hub repository'){
              steps{
                 script{
-                   pushImage()  // Come from jenkins-shared-library
+                   pushImage "$IMAGE_NAME"  // Come from jenkins-shared-library
                 }
              }
        }
