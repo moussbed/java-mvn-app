@@ -6,7 +6,7 @@ pipeline{
    }
 
    environments{
-     IMAGE_NAME 'moussbed/java-mvn:1.1'
+     IMAGE_NAME = 'moussbed/java-mvn:1.1'
    }
 
    stages{
