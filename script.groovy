@@ -1,4 +1,4 @@
-def buildJar(){
+/* def buildJar(){
     echo 'Building jar artefact ....'
     sh 'mvn package'
 }
@@ -17,7 +17,7 @@ def pushImage(){
         sh ('echo $PASS | docker login -u $USER --password-stdin ') // Use '' to prevent Interpolation of sensitive environment variables
         sh "docker push $IMAGE_NAME"
     }
-}
+}*/
 
 def deployApp(){
     echo 'Deploying application ....'
