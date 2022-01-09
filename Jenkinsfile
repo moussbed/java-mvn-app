@@ -19,6 +19,7 @@ pipeline{
 
    environment{
      IMAGE_NAME = 'moussbed/java-mvn'
+
    }
 
    stages{
@@ -49,7 +50,9 @@ pipeline{
        stage('build image'){
              steps{
                 script{
+                  
                   buildImage "$IMAGE_NAME:$IMAGE_VERSION" // Come from jenkins-shared-library
+
                 }
              }
        }
@@ -59,6 +62,7 @@ pipeline{
                 script{
                    dockerLogin()
                    pushImage "$IMAGE_NAME:$IMAGE_VERSION"  // Come from jenkins-shared-library
+
                 }
              }
        }
