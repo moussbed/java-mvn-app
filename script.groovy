@@ -20,7 +20,7 @@ def pushImage(){
 }*/
 
 def deployApp(){
-    echo 'Deploying application ....'
+    echo 'Deploying application to server ....'
 }
 
 return  this
