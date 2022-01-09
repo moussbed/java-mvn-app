@@ -21,7 +21,6 @@ def pushImage(){
 
 def deployApp(){
     echo 'Deploying application  ....'
-    echo 'Some changes  ....'
 }
 
 return  this
