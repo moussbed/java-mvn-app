@@ -1,4 +1,15 @@
+#!/usr/bin/env groovy
+// @Library('jenkins-shared-library')   We use it when we define shared library in UI on serve jenkins. In this case library is accessible globally
+// How to scope library for some projects. This configuration is used
+library  identifier: 'jenkins-shared-library@main' , retriever: modernSCM(
+                      [$class: 'GitSCMSource',
+                      remote: 'https://github.com/moussbed/jenkins-shared-library.git',
+                      credentialsId: 'Github-Credential'
+                      ]
+                      )
+
 def gv
+
 pipeline{
    agent any
 
@@ -7,7 +18,7 @@ pipeline{
    }
 
    environment{
-     IMAGE_NAME = 'moussbed/java-mvn:1.1'
+     IMAGE_NAME = 'moussbed/java-mvn'
    }
 
    stages{
@@ -20,26 +31,34 @@ pipeline{
           }
 
        }
+       stage('increment version'){
+          steps{
+            script{
+               incrementVersion() // // Come from jenkins-shared-library
+            }
+          }
+       }
 
        stage('build jar'){
            steps{
              script{
-                gv.buildJar()
+                 buildJar() // Come from jenkins-shared-library
              }
            }
        }
        stage('build image'){
              steps{
                 script{
-                  gv.buildImage()
+                  buildImage "$IMAGE_NAME:$IMAGE_VERSION" // Come from jenkins-shared-library
                 }
              }
        }
 
-       stage('push image to docker hub repository'){
+       stage('push image'){
              steps{
                 script{
-                   gv.pushImage()
+                   dockerLogin()
+                   pushImage "$IMAGE_NAME:$IMAGE_VERSION"  // Come from jenkins-shared-library
                 }
              }
        }
@@ -49,6 +68,14 @@ pipeline{
                script{
                   gv.deployApp()
                }
+            }
+       }
+
+       stage('commit version update'){
+            steps{
+                script{
+                    commitVersionUpdate()
+                }
             }
        }
    }

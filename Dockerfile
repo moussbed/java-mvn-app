@@ -4,8 +4,9 @@ EXPOSE 8080
 
 RUN mkdir -p /usr/app
 
-COPY ./target/java-mvn-app-0.0.1-SNAPSHOT.jar /usr/app
+COPY ./target/java-mvn-app-*.jar /usr/app
 
 WORKDIR /usr/app
 
-ENTRYPOINT ["java","-jar","java-mvn-app-0.0.1-SNAPSHOT.jar"]
+#ENTRYPOINT ["java","-jar","java-mvn-app-0.0.1-SNAPSHOT.jar"]
+CMD java -jar java-mvn-app-*.jar
