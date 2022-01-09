@@ -12,4 +12,12 @@ public class CalculationTest {
         final int expectedValue = 4;
         assertThat(actualValue).isEqualTo(expectedValue);
     }
+    
+    @Test
+    void additionWithNeutralElementTest(){
+        final Calculation calculation = new Calculation();
+        final int actualValue = calculation.add(1, 0);
+        final int expectedValue = 1;
+        assertThat(actualValue).isEqualTo(expectedValue);
+    }
 }
