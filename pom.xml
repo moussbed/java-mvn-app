@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mb</groupId>
     <artifactId>java-mvn-app</artifactId>
-    <version>0.0.387</version>
+    <version>0.0.388</version>
     <name>java-mvn-app</name>
     <description>java-mvn-app</description>
     <parent>
