@@ -18,7 +18,8 @@ pipeline{
    }
 
    environment{
-     IMAGE_NAME = 'moussbed/java-mvn:1.4'
+     IMAGE_NAME = 'moussbed/java-mvn'
+
    }
 
    stages{
@@ -31,6 +32,13 @@ pipeline{
           }
 
        }
+       stage('increment version'){
+          steps{
+            script{
+               incrementVersion() // // Come from jenkins-shared-library
+            }
+          }
+       }
 
        stage('build jar'){
            steps{
@@ -42,7 +50,9 @@ pipeline{
        stage('build image'){
              steps{
                 script{
-                  buildImage "$IMAGE_NAME" // Come from jenkins-shared-library
+                  
+                  buildImage "$IMAGE_NAME:$IMAGE_VERSION" // Come from jenkins-shared-library
+
                 }
              }
        }
@@ -51,7 +61,8 @@ pipeline{
              steps{
                 script{
                    dockerLogin()
-                   pushImage "$IMAGE_NAME"  // Come from jenkins-shared-library
+                   pushImage "$IMAGE_NAME:$IMAGE_VERSION"  // Come from jenkins-shared-library
+
                 }
              }
        }
@@ -61,6 +72,14 @@ pipeline{
                script{
                   gv.deployApp()
                }
+            }
+       }
+
+       stage('commit version update'){
+            steps{
+                script{
+                    commitVersionUpdate()
+                }
             }
        }
    }
