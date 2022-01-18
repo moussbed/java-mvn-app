@@ -18,10 +18,10 @@ def pushImage(){
         sh "docker push $IMAGE_NAME"
     }
 }*/
-
-def deployApp(){
+// We can move it to shared library
+def deployApp(String image){
     echo 'Deploying application ....'
-    def dockerCmd = 'docker run -d -p 3000:80 mmoussbed/react-node:1.0'
+    def dockerCmd = "docker run -d -p 8080:8080 $image"
     sshagent(['ec2-server-key']) {
         sh "ssh -o StrictHostKeyChecking=no ec2-user@3.144.219.193 ${dockerCmd}"
     }

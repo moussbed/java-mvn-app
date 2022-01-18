@@ -70,7 +70,7 @@ pipeline{
        stage('deploy'){
             steps{
                script{
-                  gv.deployApp()
+                  gv.deployApp("$IMAGE_NAME:$IMAGE_VERSION")
                }
             }
        }
