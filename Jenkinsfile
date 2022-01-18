@@ -58,6 +58,11 @@ pipeline{
        }
 
        stage('push image'){
+              when {
+                    expression{
+                       BRANCH_NAME == 'main'
+                    }
+              }
              steps{
                 script{
                    dockerLogin()
@@ -68,14 +73,24 @@ pipeline{
        }
 
        stage('deploy'){
+             when {
+                   expression{
+                       BRANCH_NAME == 'main'
+                   }
+             }
             steps{
                script{
-                  gv.deployApp()
+                  gv.deployApp("$IMAGE_NAME:$IMAGE_VERSION")
                }
             }
        }
 
        stage('commit version update'){
+            when {
+                  expression{
+                      BRANCH_NAME == 'main'
+                  }
+            }
             steps{
                 script{
                     commitVersionUpdate()

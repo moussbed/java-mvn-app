@@ -18,9 +18,13 @@ def pushImage(){
         sh "docker push $IMAGE_NAME"
     }
 }*/
-
-def deployApp(){
-    echo 'Deploying application ....' 
+// We can move it to shared library
+def deployApp(String image){
+    echo 'Deploying application ....'
+    def dockerCmd = "docker run -d -p 8080:8080 $image"
+    sshagent(['ec2-server-key']) {
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.144.219.193 ${dockerCmd}"
+    }
 }
 
 return  this
