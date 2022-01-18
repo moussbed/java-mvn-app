@@ -80,7 +80,8 @@ pipeline{
              }
             steps{
                script{
-                  gv.deployApp("$IMAGE_NAME:$IMAGE_VERSION")
+                  // gv.deployAppByDocker("$IMAGE_NAME:$IMAGE_VERSION")
+                   gv.deployAppByDockerCompose()
                }
             }
        }
