@@ -29,7 +29,7 @@ def deployAppByDocker(String image){
 def deployAppByDockerCompose(String image){
     echo 'Deploying application ....'
    // def dockerComposeCmd = "docker-compose -f docker-compose.yaml up --detach"
-    def shellCmd= "bash ./server-cmds.sh ${image}"
+    def shellCmd= "bash server-cmds.sh ${image}"
     sshagent(['ec2-server-key']) {
         sh 'scp server-cmds.sh ec2-user@3.144.219.193:/home/ec2-user'
         sh 'scp docker-compose.yaml ec2-user@3.144.219.193:/home/ec2-user'
