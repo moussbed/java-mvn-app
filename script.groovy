@@ -20,7 +20,11 @@ def pushImage(){
 }*/
 
 def deployApp(){
-    echo 'Deploying application ....' 
+    echo 'Deploying application ....'
+    def dockerCmd = 'docker run -d -p 3000:80 mmoussbed/react-node:1.0'
+    sshagent(['ec2-server-key']) {
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.144.219.193 ${dockerCmd}"
+    }
 }
 
 return  this
