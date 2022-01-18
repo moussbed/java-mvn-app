@@ -19,12 +19,21 @@ def pushImage(){
     }
 }*/
 // We can move it to shared library
-def deployApp(String image){
+def deployAppByDocker(String image){
     echo 'Deploying application ....'
     def dockerCmd = "docker run -d -p 8080:8080 $image"
     sshagent(['ec2-server-key']) {
         sh "ssh -o StrictHostKeyChecking=no ec2-user@3.144.219.193 ${dockerCmd}"
     }
+}
+def deployAppByDockerCompose(){
+    echo 'Deploying application ....'
+    def dockerComposeCmd = "docker-compose -f docker-compose.yaml up --detach"
+    sshagent(['ec2-server-key']) {
+        sh 'scp docker-compose.yaml ec2-user@3.144.219.193:/home/ec2-user'
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.144.219.193 ${dockerComposeCmd}"
+    }
+
 }
 
 return  this
