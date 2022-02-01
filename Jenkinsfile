@@ -69,7 +69,7 @@ pipeline{
                   // dockerLogin()
                  //  pushImage "$IMAGE_NAME:$IMAGE_VERSION"  // Come from jenkins-shared-library
                   dockerLoginECR()
-                  pushDockerImageECR "$IMAGE_NAME:$IMAGE_VERSION"
+                  pushImageECR "$IMAGE_NAME:$IMAGE_VERSION"
                 }
              }
        }
