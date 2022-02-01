@@ -40,4 +40,9 @@ def deployAppByDockerCompose(String tag){
 
 }
 
+def deployAppByKubernetes(String tag){
+    echo 'Deploying application ....'
+    sh 'kubectl create deployment nginx-deployment --image=nginx'
+}
+
 return  this
