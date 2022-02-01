@@ -40,9 +40,10 @@ def deployAppByDockerCompose(String tag){
 
 }
 
-def deployAppByKubernetes(String tag){
+def deployAppByKubernetes(){
     echo 'Deploying application ....'
-    sh 'kubectl create deployment nginx-deployment --image=nginx'
+    sh 'envsubst < kubernetes/deployment.yaml | kubectl apply -f -'
+    sh 'envsubst < kubernetes/service.yaml | kubectl apply -f -'
 }
 
 return  this
