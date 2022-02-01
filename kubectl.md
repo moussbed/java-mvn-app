@@ -1,3 +1,17 @@
+#### Create cluster with eksctl
+```bash
+$ eksctl create cluster \                                                                                                                                   ░▒▓ ✔  system   19:41:39  
+> --name demo-cluster \          
+> --version 1.21 \               
+> --region us-east-2 \           
+> --nodegroup-name demo-nodes \  
+> --node-type t2.micro \         
+> --nodes 2 \                     
+> --nodes-min 1 \                
+> --nodes-max 3 \
+> --profile admin 
+```
+
 #### Create the Secret
 
 This secret is useful when we want to pull image from a private registry.
