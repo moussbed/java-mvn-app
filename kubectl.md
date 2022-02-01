@@ -11,5 +11,13 @@ It isn't necessary to apply it on the CI. We apply once in the command line  as 
    > --docker-password=xxxxx
 ```
 
+or 
+```bash
+  $ kubectl create secret docker-registry ecr-registry-key \                                                       ░▒▓ ✔  system   admin@demo-cluster.us-east-2.eksctl.io ⎈  17:15:37  
+  > --docker-server=xxxxx.dkr.ecr.us-east-2.amazonaws.com \
+  > --docker-username=AWS \   
+  > --docker-password=$(aws ecr get-login-password --region us-east-2)
+```
+
 
 
