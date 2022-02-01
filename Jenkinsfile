@@ -78,10 +78,15 @@ pipeline{
                        BRANCH_NAME == 'main'
                    }
              }
+             environment{
+                 AWS_ACCESS_KEY_ID = credentials('Jenkins_aws_access_key_id')
+                 AWS_SECRET_ACCESS_KEY = credentials('Jenkins_aws_secret_access_key')
+             }
             steps{
                script{
                   // gv.deployAppByDocker("$IMAGE_NAME:$IMAGE_VERSION")
-                   gv.deployAppByDockerCompose("$IMAGE_VERSION")
+                  // gv.deployAppByDockerCompose("$IMAGE_VERSION")
+                  gv.deployAppByKubernetes("$IMAGE_VERSION")
                }
             }
        }
