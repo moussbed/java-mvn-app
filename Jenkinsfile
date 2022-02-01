@@ -18,8 +18,9 @@ pipeline{
    }
 
    environment{
-     IMAGE_NAME = 'moussbed/java-mvn'
-
+   //  IMAGE_NAME = 'moussbed/java-mvn'
+       REPO_SERVER= '637771966635.dkr.ecr.us-east-2.amazonaws.com'
+       IMAGE_NAME = "${REPO_SERVER}/my-app"
    }
 
    stages{
@@ -65,9 +66,10 @@ pipeline{
               }
              steps{
                 script{
-                   dockerLogin()
-                   pushImage "$IMAGE_NAME:$IMAGE_VERSION"  // Come from jenkins-shared-library
-
+                  // dockerLogin()
+                 //  pushImage "$IMAGE_NAME:$IMAGE_VERSION"  // Come from jenkins-shared-library
+                  dockerLoginECR()
+                  pushDockerImageECR "$IMAGE_NAME:$IMAGE_VERSION"
                 }
              }
        }

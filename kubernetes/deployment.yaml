@@ -15,10 +15,11 @@ spec:
         app: $APP_NAME
     spec:
       imagePullSecrets:
-        - name: my-registry-key
+        - name: ecr-registry-key
       containers:
         - name: $APP_NAME
-          image: "moussbed/java-mvn:${IMAGE_VERSION}"
+       #   image: "moussbed/java-mvn:${IMAGE_VERSION}"
+          image: "${IMAGE_NAME}:${IMAGE_VERSION}"
           imagePullPolicy: Always # Force to pull
           ports:
             - containerPort: 8080
