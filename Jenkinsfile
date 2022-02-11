@@ -18,9 +18,10 @@ pipeline{
    }
 
    environment{
-   //  IMAGE_NAME = 'moussbed/java-mvn'
        REPO_SERVER= '637771966635.dkr.ecr.us-east-2.amazonaws.com'
-       IMAGE_NAME = "${REPO_SERVER}/my-app"
+       //IMAGE_NAME = "${REPO_SERVER}/my-app"
+       IMAGE_NAME = 'moussbed/java-mvn'
+
    }
 
    stages{
