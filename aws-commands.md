@@ -202,3 +202,9 @@ $ aws ec2 terminate-instances --instance-ids i-0115ab4b62e28a5d4  # terminate in
 $ aws ec2 aa
 $ aws iam aa
 ```
+
+It is difficult to do it manually. We can automate it by Terraform. We have example on this repository
+https://github.com/moussbed/terraform
+
+In production or staging, it's necessary to commit terraform.tfvars because ops define it. It's why we add default 
+value in the Terraform config file.

@@ -74,6 +74,28 @@ pipeline{
              }
        }
 
+       stage('provision server'){
+
+           // Terraform provision server
+            when {
+                  expression{
+                      BRANCH_NAME == 'main'
+                }
+            }
+             environment{
+                     AWS_ACCESS_KEY_ID = credentials('Jenkins_aws_access_key_id')
+                     AWS_SECRET_ACCESS_KEY = credentials('Jenkins_aws_secret_access_key')
+                     // Set variable values from CI/CD pipeline
+                     TF_VAR_env_prefix= "prod"
+             }
+            steps{
+                script{
+                  gv.provisionEC2Instance()
+                }
+            }
+
+       }
+
        stage('deploy'){
              when {
                    expression{
@@ -87,9 +109,14 @@ pipeline{
              }
             steps{
                script{
+                  // Give time to provision stage to setup instance and install tools(docker, docker compose)
+                  // You can also execute "server provisioning" as the first stage
+                  echo "Waiting for EC2 Server to initialize"
+                  sleep(time:90, unit:"SECONDS")
+
                   // gv.deployAppByDocker("$IMAGE_NAME:$IMAGE_VERSION")
-                  // gv.deployAppByDockerCompose("$IMAGE_VERSION")
-                  gv.deployAppByKubernetes()
+                  gv.deployAppByDockerCompose("$IMAGE_VERSION")
+                  //gv.deployAppByKubernetes()
                }
             }
        }
