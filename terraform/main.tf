@@ -28,4 +28,5 @@ module "myapp-webserver" {
   instance_type=var.instance_type
   subnet_id=module.myapp-subnet.subnet.id
   availability_zone= var.availability_zone
+  jenkins_ip=var.jenkins_ip
 }
