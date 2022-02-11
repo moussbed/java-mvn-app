@@ -4,3 +4,4 @@ variable "env_prefix" {}
 variable "instance_type" {}
 variable "subnet_id" {}
 variable "availability_zone" {}
+variable "jenkins_ip" {}
