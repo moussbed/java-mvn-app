@@ -66,10 +66,10 @@ pipeline{
               }
              steps{
                 script{
-                  // dockerLogin()
-                 //  pushImage "$IMAGE_NAME:$IMAGE_VERSION"  // Come from jenkins-shared-library
-                  dockerLoginECR()
-                  pushImageECR "$IMAGE_NAME:$IMAGE_VERSION"
+                   dockerLogin()
+                   pushImage "$IMAGE_NAME:$IMAGE_VERSION"  // Come from jenkins-shared-library
+                //  dockerLoginECR()
+                //  pushImageECR "$IMAGE_NAME:$IMAGE_VERSION"
                 }
              }
        }
