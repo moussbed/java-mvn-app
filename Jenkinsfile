@@ -87,6 +87,7 @@ pipeline{
                      AWS_SECRET_ACCESS_KEY = credentials('Jenkins_aws_secret_access_key')
                      // Set variable values from CI/CD pipeline
                      TF_VAR_env_prefix= "prod"
+                     TF_VAR_my_ip="102.116.66.234/32"
              }
             steps{
                 script{
