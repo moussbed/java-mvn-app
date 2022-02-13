@@ -1,6 +1,15 @@
 provider "aws" {
   region = var.region
 }
+# Useful when we want to use remote state to avoid that each environment having its current state
+terraform {
+  required_version = ">= 0.12"
+  backend "s3" {
+     bucket = "remote-state-terraform-bucket"
+     key = "myapp/state.tfstate"
+    region = "us-east-2"
+  }
+}
 # VPC (Virtual Private Cloud)
 resource "aws_vpc" "myapp-vpc" {
   cidr_block = var.vpc_cidr_block
