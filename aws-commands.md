@@ -208,3 +208,20 @@ https://github.com/moussbed/terraform
 
 In production or staging, it's necessary to commit terraform.tfvars because ops define it. It's why we add default 
 value in the Terraform config file.
+
+If we want to destroy our environment we must do it from CI/CD tool. Because in the local machine, 
+we don't have the current  state of our infrastructure.
+In jenkins for example pick the build number, replay the pipeline and modify 
+```groovy
+  sh "terraform apply --auto-approve"
+      EC2_PUBLIC_IP = sh(
+              script: "terraform output ec2_public_ip",
+              returnStdout: true
+      ).trim()
+```
+
+by 
+```groovy
+   sh "terraform destroy --auto-approve"
+```
+and remove stage deploy
