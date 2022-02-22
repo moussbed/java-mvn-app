@@ -1,146 +1,49 @@
-#!/usr/bin/env groovy
-// @Library('jenkins-shared-library')   We use it when we define shared library in UI on serve jenkins. In this case library is accessible globally
-// How to scope library for some projects. This configuration is used
-library  identifier: 'jenkins-shared-library@main' , retriever: modernSCM(
-                      [$class: 'GitSCMSource',
-                      remote: 'https://github.com/moussbed/jenkins-shared-library.git',
-                      credentialsId: 'Github-Credential'
-                      ]
-                      )
-
-def gv
 
 pipeline{
    agent any
 
-   tools{
-     maven  'Maven-3.8.4'
-   }
-
-   environment{
-       REPO_SERVER= '637771966635.dkr.ecr.us-east-2.amazonaws.com'
-       //IMAGE_NAME = "${REPO_SERVER}/my-app"
-       IMAGE_NAME = 'moussbed/java-mvn'
-
+   environment {
+      ANSIBLE_SERVER= "167.99.136.123"
    }
 
    stages{
-
-       stage('init'){
-          steps{
-              script{
-                gv = load "script.groovy"
-              }
-          }
-
-       }
-       stage('increment version'){
-          steps{
-            script{
-               incrementVersion() // // Come from jenkins-shared-library
-            }
-          }
-       }
-
-       stage('build jar'){
-           steps{
-             script{
-                 buildJar() // Come from jenkins-shared-library
-             }
-           }
-       }
-       stage('build image'){
-             steps{
-                script{
-                  
-                  buildImage "$IMAGE_NAME:$IMAGE_VERSION" // Come from jenkins-shared-library
-
-                }
-             }
-       }
-
-       stage('push image'){
-              when {
-                    expression{
-                       BRANCH_NAME == 'main'
-                    }
-              }
-             steps{
-                script{
-                   dockerLogin()
-                   pushImage "$IMAGE_NAME:$IMAGE_VERSION"  // Come from jenkins-shared-library
-                //  dockerLoginECR()
-                //  pushImageECR "$IMAGE_NAME:$IMAGE_VERSION"
-                }
-             }
-       }
-
-       stage('provision server'){
-
-           // Terraform provision server
-            when {
-                  expression{
-                      BRANCH_NAME == 'main'
-                }
-            }
-             environment{
-                     AWS_ACCESS_KEY_ID = credentials('Jenkins_aws_access_key_id')
-                     AWS_SECRET_ACCESS_KEY = credentials('Jenkins_aws_secret_access_key')
-                     // Set variable values from CI/CD pipeline
-                     TF_VAR_env_prefix= "prod"
-                     TF_VAR_my_ip="102.116.66.234/32"
-             }
+        stage ("Copy files to the ansible server"){
             steps{
                 script{
-                  gv.provisionEC2Instance()
+                     echo "Copy all necessary files to ansible control node"
+                     sshagent(['ansible-server-key-pair']){
+                        sh 'scp -o StrictHostKeyChecking=no ansible/* root@${ANSIBLE_SERVER}:/root'
+
+                        // Copy the key pair to ec2 instances to ansible control node
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ec2-server-pair-key', keyFileVariable: 'keyfile', usernameVariable: 'user')]){
+                            sh 'scp $keyfile root@$ANSIBLE_SERVER:/root/my_key' // The same directory which is defined to ansible config (ansible.cfg)
+                        }
+                     }
+
                 }
+
             }
+        }
 
-       }
-
-       stage('deploy'){
-             when {
-                   expression{
-                       BRANCH_NAME == 'main'
+     // Before install ssh pipeline steps
+        stage("Execute ansible playbook"){
+            steps{
+                script {
+                   echo "Calling ansible playbook to configure ec2 instances"
+                   def remote = [:]
+                   remote.name = "ansible-node-control"
+                   remote.host = ANSIBLE_SERVER
+                   remote.allowAnyHosts = true
+                   withCredentials([sshUserPrivateKey(credentialsId: 'ansible-server-key-pair', keyFileVariable: 'keyfile', usernameVariable: 'user')]){
+                      remote.user = user
+                      remote.identityFile = keyfile
+                      sshScript remote: remote, script: "ansible/prepare-ansible-server.sh" // It's useful if tools aren't already installed
+                      sshCommand remote: remote, command: "ansible-playbook deploy-docker.yaml"
                    }
-             }
-             environment{
-                 // For Kubernetes
-                 AWS_ACCESS_KEY_ID = credentials('Jenkins_aws_access_key_id')
-                 AWS_SECRET_ACCESS_KEY = credentials('Jenkins_aws_secret_access_key')
-                 APP_NAME="java-maven-app"
 
-                 // For Docker Compose if we pull image from private docker repository
-                 DOCKER_CREDENTIALS = credentials("docker-hub-credentials")
-             }
-            steps{
-               script{
-                  // Give time to provision stage to setup instance and install tools(docker, docker compose)
-                  // You can also execute "server provisioning" as the first stage
-                  echo "Waiting for EC2 Server to initialize"
-                  sleep(time:90, unit:"SECONDS")
-
-                  // gv.deployAppByDocker("$IMAGE_NAME:$IMAGE_VERSION")
-                  gv.deployAppByDockerCompose("$IMAGE_VERSION")
-                  // Use it we pull image from private repository
-                  // gv.deployAppByDockerCompose("$IMAGE_VERSION", "$DOCKER_CREDENTIALS_USR","$$DOCKER_CREDENTIALS_PSW")
-                  // gv.deployAppByKubernetes()
-               }
-            }
-       }
-
-       stage('commit version update'){
-            when {
-                  expression{
-                      BRANCH_NAME == 'main'
-                  }
-            }
-            steps{
-                script{
-                    commitVersionUpdate()
                 }
             }
-       }
+        }
    }
 
 }

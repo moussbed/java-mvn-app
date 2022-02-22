@@ -1,0 +1,104 @@
+---
+# - name: Wait for ssh connection
+#   hosts: all
+#   gather_facts: no
+
+#   tasks:
+#     - name: Ensure that ssh port is open
+#       wait_for:
+#         port: 22
+#         host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+#         search_regex: OpenSSH
+#         delay: 10 
+#         timeout: 100
+#       vars:
+#         ansible_connection: local
+#         ansible_python_interpeter: /usr/bin/python
+
+- name: Install python3, docker and docker-compose
+  hosts: aws_ec2
+  become: yes
+  gather_facts: no
+
+  vars_files:
+    - vars
+
+  tasks:
+    - name: Install python3 and docker
+      vars: 
+       ansible_python_interpeter: /usr/bin/python
+      yum:
+        name: 
+          - python3
+          - docker
+        update_cache: yes
+        state: present
+
+    - name: Install docker and docker-compose python module    
+      pip:
+        name: 
+          - docker
+          - docker-compose
+
+    - name: Install docker compose
+      get_url: 
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{lookup('pipe', 'uname -s')}}-{{lookup('pipe', 'uname -m')}}
+        dest: /usr/local/bin/docker-compose
+        mode: +x  
+
+    - name: Start docker
+      systemd:
+        name: docker
+        state: started          
+
+
+- name: Add ec2-user to docker group
+  hosts: aws_ec2
+  become: yes
+
+  tasks:
+    - name: Add ec2-user to docker group (Adding a user to the group does not take effect immediately )
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+
+    - name: Reconnect to server session 
+      meta: reset_connection
+
+
+- name: Test docker pull
+  hosts: aws_ec2
+
+  tasks:
+    - name: Pull redis
+      docker_image: 
+        name: redis
+        source: pull       
+
+- name: Start docker containers
+  hosts: aws_ec2
+
+  # vars_prompt:
+  #   - name: docker_password
+  #     prompt: Enter password for docker registry
+
+  vars_files:
+     - vars
+
+  tasks: 
+    - name: Copy docker-compose file
+      copy:
+        src: docker-compose.yaml
+        dest: /home/ec2-user/docker-compose.yaml
+
+    - name: docker login
+      docker_login:  
+        registry_url: https://index.docker.io/v1
+        username: moussbed
+        password: "{{docker_password}}"
+
+    - name: Start containers from docker-compose 
+      docker_compose:
+        project_src: /home/ec2-user     
+            
